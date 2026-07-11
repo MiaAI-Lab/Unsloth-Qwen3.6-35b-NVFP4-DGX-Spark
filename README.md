@@ -52,13 +52,20 @@ A vLLM deployment for **Unsloth Qwen3.6-35B-A3B-NVFP4** on NVIDIA DGX Spark (GB1
 
 ## Quick Start
 
-### 1. (Optional) Set HuggingFace Token
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/MiaAI-Lab/Unsloth-Qwen3.6-35b-NVFP4-DGX-Spark.git
+cd Unsloth-Qwen3.6-35b-NVFP4-DGX-Spark
+```
+
+### 2. (Optional) Set HuggingFace Token
 
 ```bash
 export HF_TOKEN="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
-### 2. Start the Server
+### 3. Start the Server
 
 ```bash
 ./start.sh
@@ -87,7 +94,7 @@ vLLM is ready!
 OpenAI base URL: http://0.0.0.0:8888/v1
 ```
 
-### 3. Test It
+### 4. Test It
 
 ```bash
 # Quick health check
@@ -104,7 +111,7 @@ curl -s http://0.0.0.0:8888/v1/chat/completions \
   }' | jq
 ```
 
-### 4. Stop the Server
+### 5. Stop the Server
 
 ```bash
 ./stop.sh
