@@ -224,6 +224,8 @@ The `model` field in API requests must match the server's `--served-model-name` 
 - **FlashInfer B12X** linear kernel provides native SM121 NVFP4 execution.
 - **FP8 KV cache** balances memory efficiency and accuracy.
 - **Decode speed at c1:** ~80 tok/s on GB10. Higher concurrency increases total throughput.
+- **TTFT (Time to First Token):** P50 103ms, P95 107ms at c1 with 200-token prompt, 50-token generation. Minimal variance.
+
 
 ---
 
