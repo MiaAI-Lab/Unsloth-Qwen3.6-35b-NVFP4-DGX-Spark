@@ -193,10 +193,9 @@ The server exposes an OpenAI-compatible API. Configure your client with these se
   }
 }
 ```
-
 The `model` field in API requests must match the server's `--served-model-name` (defaults to the HuggingFace model ID).
 
----
+> **Qwen's recommended parameters:** For non-coding / general tasks (thinking mode), use `temperature=1.0, top_p=0.95, top_k=20, min_p=0.0`. The `temperature=0.6` above is suited for precise coding tasks. See the [Unsloth Qwen3.6 guide](https://unsloth.ai/docs/models/qwen3.6) for details.
 
 ## Docker Details
 
