@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Must be NVFP4-Fast: non-Fast NVFP4 keeps layers 32-39 experts as FP8,
-# so --moe-backend flashinfer_b12x fails. Fast has NVFP4 experts throughout.
-MODEL_ID="unsloth/Qwen3.6-35B-A3B-NVFP4-Fast"
+MODEL_ID="unsloth/Qwen3.6-35B-A3B-NVFP4"
 IMAGE="ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-dgx-spark:latest"
 CONTAINER_NAME="Qwen35-35b-a3b-nvfp4"
 HOST="0.0.0.0"
@@ -146,7 +144,7 @@ docker run -d \
     --port "${PORT}" \
     --tensor-parallel-size 1 \
     --trust-remote-code \
-    --moe-backend flashinfer_b12x \
+    --moe-backend auto \
     --gpu-memory-utilization 0.80 \
     --linear-backend flashinfer_b12x \
     --attention-backend flashinfer \
