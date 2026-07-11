@@ -150,7 +150,7 @@ All options in [`start.sh`](start.sh). Key variables:
 
 ---
 
-## Recommended Client Configuration
+## Recommended Client Configuration for Coding
 
 The server exposes an OpenAI-compatible API. Configure your client with these settings:
 
