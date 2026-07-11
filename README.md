@@ -4,7 +4,7 @@
 [![Model](https://img.shields.io/badge/model-unsloth%2FQwen3.6--35B--A3B--NVFP4-informational)](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-NVFP4)
 [![vLLM](https://img.shields.io/badge/vLLM-0.24.1--dev-5B8DEF)](https://github.com/vllm-project/vllm)
 
-A vLLM deployment for **Unsloth Qwen3.6-35B-A3B-NVFP4** on NVIDIA DGX Spark (GB10) — mixed FP8/NVFP4 MoE with FlashInfer B12X kernels, FP8 KV cache, and MTP speculative decoding.
+A vLLM deployment for **Unsloth Qwen3.6-35B-A3B-NVFP4** on NVIDIA DGX Spark (GB10) — mixed FP8/NVFP4 MoE with FlashInfer CUTLASS NVFP4 experts, Triton FP8 experts, FlashInfer B12X linear GEMM, FP8 KV cache, and MTP speculative decoding.
 
 <p>
 <a href="https://x.com/MiaAI_lab" target="_blank">
