@@ -73,7 +73,7 @@ This will:
 6. Poll `/v1/models` until the server is ready
 7. Print the OpenAI base URL
 
-**Expected output (after ~5–10 minutes for first load):**
+**Expected output (first startup may take 10–20 minutes — torch.compile + warmup; subsequent restarts are ~10–20 seconds):**
 ```
 Model unsloth/Qwen3.6-35B-A3B-NVFP4 is already cached in ...
 Starting vLLM container for unsloth/Qwen3.6-35B-A3B-NVFP4
