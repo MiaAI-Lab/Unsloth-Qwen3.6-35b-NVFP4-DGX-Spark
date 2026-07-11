@@ -1,12 +1,12 @@
-# Qwen3.6-35B-A3B-NVFP4-Fast — Self-Hosted Inference via vLLM
+# Qwen3.6-35B-A3B-NVFP4-Fast — DGX Spark
 
 [![GPU: GB10 / SM121](https://img.shields.io/badge/GPU-GB10%20%2F%20SM121-76B900)](https://www.nvidia.com/en-us/products/workstations/dgx-spark/)
 [![Model](https://img.shields.io/badge/model-unsloth%2FQwen3.6--35B--A3B--NVFP4--Fast-informational)](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-NVFP4-Fast)
 [![vLLM](https://img.shields.io/badge/vLLM-0.24.1--dev-5B8DEF)](https://github.com/vllm-project/vllm)
 
-A vLLM deployment for **Unsloth Qwen3.6-35B-A3B-NVFP4-Fast** on NVIDIA GB10 (DGX Spark) — mixed FP8/NVFP4 MoE with FlashInfer B12X kernels, FP8 KV cache, and MTP speculative decoding.
+A vLLM deployment for **Unsloth Qwen3.6-35B-A3B-NVFP4-Fast** on NVIDIA DGX Spark (GB10) — mixed FP8/NVFP4 MoE with FlashInfer B12X kernels, FP8 KV cache, and MTP speculative decoding.
 
-Built on the [reference SM121 runtime](https://github.com/r0b0tlab/qwen36-35b-a3b-nvfp4-fast-sm121-vllm) with the `FlashInferB12xNvFp4LinearKernel` re-enabled and the `flashinfer_b12x` linear backend set extended with FP8/MXFP fallbacks.
+The container is a custom image patched to use `FlashInferB12xNvFp4LinearKernel` with fallback kernels for FP8/MXFP layers.
 
 ---
 
@@ -71,7 +71,7 @@ This will:
 ```
 Model unsloth/Qwen3.6-35B-A3B-NVFP4-Fast is already cached in ...
 Starting vLLM container for unsloth/Qwen3.6-35B-A3B-NVFP4-Fast
-Image: ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-recipe:latest
+Image: ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-dgx-spark:latest
 Listening on 0.0.0.0:8888
 Spawned container Qwen35-35b-a3b-nvfp4 (abc123...)
 Waiting for HTTP readiness at http://127.0.0.1:8888/v1/models
@@ -116,7 +116,7 @@ All options in [`start.sh`](start.sh). Key variables:
 | Variable | Default | Description |
 |---|---|---|
 | `MODEL_ID` | `unsloth/Qwen3.6-35B-A3B-NVFP4-Fast` | HuggingFace model identifier |
-| `IMAGE` | `ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-recipe:latest` | Custom vLLM Docker image |
+| `IMAGE` | `ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-dgx-spark:latest` | Custom vLLM Docker image |
 | `CONTAINER_NAME` | `Qwen35-35b-a3b-nvfp4` | Docker container name |
 | `HOST` | `0.0.0.0` | Bind address |
 | `PORT` | `8888` | HTTP port |
@@ -132,9 +132,9 @@ All options in [`start.sh`](start.sh). Key variables:
 | `--linear-backend` | `flashinfer_b12x` | FlashInfer B12X NVFP4 GEMM + FP8/MXFP fallbacks |
 | `--attention-backend` | `flashinfer` | FlashInfer attention |
 | `--kv-cache-dtype` | `fp8` | FP8 KV cache |
-| `--gpu-memory-utilization` | `0.90` | 90 % of GPU memory |
+| `--gpu-memory-utilization` | `0.80` | 80 % of GPU memory |
 | `--max-model-len` | `262144` | 256K context window |
-| `--max-num-seqs` | `27` | Max concurrent sequences |
+| `--max-num-seqs` | `24` | Max concurrent sequences |
 | `--max-num-batched-tokens` | `32768` | Max tokens per batch |
 | `--enable-chunked-prefill` | — | Improves throughput |
 | `--async-scheduling` | — | Async scheduling |
@@ -190,7 +190,7 @@ qwen36-35b/
 
 | Property | Value |
 |---|---|
-| **Image** | `ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-recipe:latest` |
+| **Image** | `ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-dgx-spark:latest` |
 | **Container Name** | `Qwen35-35b-a3b-nvfp4` |
 | **Network** | `host` mode |
 | **IPC** | `host` mode |
@@ -205,8 +205,8 @@ qwen36-35b/
 
 ## Performance Notes
 
-- **90 % GPU memory** allocated (`--gpu-memory-utilization 0.90`). Model loads ~22 GiB.
-- **27 concurrent sequences** (`--max-num-seqs 27`) based on measured KV cache capacity of ~7.1M FP8 tokens at 262K context.
+- **80 % GPU memory** allocated (`--gpu-memory-utilization 0.80`). Model loads ~22 GiB.
+- **24 concurrent sequences** (`--max-num-seqs 24`) based on measured KV cache capacity of ~5.9M FP8 tokens at 262K context.
 - **32768 batched tokens** (`--max-num-batched-tokens 32768`) for efficient batching.
 - **Speculative decoding** (MTP, 2 tokens) improves decode speed; acceptance rate ~86 %.
 - **FlashInfer B12X** MoE and linear kernels provide native SM121 NVFP4 execution.
@@ -240,6 +240,5 @@ qwen36-35b/
 
 - [vLLM Documentation](https://docs.vllm.ai/)
 - [Qwen3.6 on HuggingFace](https://huggingface.co/unsloth/Qwen3.6-35B-A3B-NVFP4-Fast)
-- [Reference SM121 runtime](https://github.com/r0b0tlab/qwen36-35b-a3b-nvfp4-fast-sm121-vllm)
 - [FlashInfer](https://github.com/flashinfer-ai/flashinfer)
 - [OpenAI API Reference](https://platform.openai.com/docs/api-reference)

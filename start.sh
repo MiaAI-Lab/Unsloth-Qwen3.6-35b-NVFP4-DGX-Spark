@@ -4,7 +4,7 @@ set -euo pipefail
 # Must be NVFP4-Fast: non-Fast NVFP4 keeps layers 32-39 experts as FP8,
 # so --moe-backend flashinfer_b12x fails. Fast has NVFP4 experts throughout.
 MODEL_ID="unsloth/Qwen3.6-35B-A3B-NVFP4-Fast"
-IMAGE="ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-recipe:latest"
+IMAGE="ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-dgx-spark:latest"
 CONTAINER_NAME="Qwen35-35b-a3b-nvfp4"
 HOST="0.0.0.0"
 PORT="8888"
@@ -118,8 +118,8 @@ docker pull "${IMAGE}" 2>&1 || { echo "Failed to pull image"; exit 1; }
 echo
 
 cat >"${LOG_FILE}" <<EOF
-
-# This image ships MODEL_ID=/models/model and entrypoint start_vllm.sh.
+[$(date -Is)] launching vLLM container
+EOF
 # Override the entrypoint so we control serve flags and use the HF cache mount
 # (the baked entrypoint expects a local path mount at /models/model).
 docker run -d \
@@ -147,10 +147,11 @@ docker run -d \
     --tensor-parallel-size 1 \
     --trust-remote-code \
     --moe-backend flashinfer_b12x \
+    --gpu-memory-utilization 0.80 \
     --linear-backend flashinfer_b12x \
     --attention-backend flashinfer \
     --max-model-len 262144 \
-    --max-num-seqs 8 \
+    --max-num-seqs 24 \
     --max-num-batched-tokens 32768 \
     --enable-chunked-prefill \
     --async-scheduling \
