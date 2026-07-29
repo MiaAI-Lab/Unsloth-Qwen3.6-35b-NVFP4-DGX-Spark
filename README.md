@@ -39,6 +39,28 @@ A vLLM deployment for **Unsloth Qwen3.6-35B-A3B-NVFP4** on NVIDIA DGX Spark (GB1
 
 ---
 
+## Benchmark
+
+Decode benchmark on **DGX Spark (GB10)** with this stack: `unsloth/Qwen3.6-35B-A3B-NVFP4`, port `8888`, **500** completion tokens, concurrency **1 / 2 / 3 / 4 / 6 / 8** (~1m 1s wall time).
+
+![Decode benchmark — Unsloth Qwen3.6-35B-A3B-NVFP4 on DGX Spark](benchmark.png)
+
+| Load | TTFT | Streams | Aggregate (tok/s) | Per-stream (tok/s) |
+|:----:|-----:|:-------:|------------------:|-------------------:|
+| ×1 | 103 ms | 1/1 | **95.1** | 95.1 |
+| ×2 | 165 ms | 2/2 | **132.0** | 67.3 |
+| ×3 | 142 ms | 3/3 | **149.4** | 50.3 |
+| ×4 | 214 ms | 4/4 | **171.6** | 49.7 |
+| ×6 | 233 ms | 6/6 | **235.3** | 40.5 |
+| ×8 | 242 ms | 8/8 | **317.0** | 41.1 |
+
+- **Aggregate** — total decode tok/s across all concurrent streams  
+- **Stream** — average tok/s per stream  
+
+At concurrency 1, decode is ~**95 tok/s** with **~103 ms** TTFT. Aggregate scales to ~**317 tok/s** at 8 concurrent streams.
+
+---
+
 ## Prerequisites
 
 | Requirement | Notes |
@@ -324,8 +346,7 @@ The `model` field in requests must match the served model id (defaults to the Hu
 - **MTP** (2 tokens) improves decode; acceptance rate depends on workload.  
 - **FlashInfer B12X** linear path for NVFP4 GEMM on SM121.  
 - **FP8 KV cache** for memory efficiency.  
-- **Decode (c1):** on the order of ~80 tok/s on GB10 for this recipe (workload-dependent).  
-- **TTFT:** previously measured P50 ~103 ms / P95 ~107 ms at c1 (200-token prompt, 50-token gen) on the older stack — re-benchmark after stack changes if you need hard numbers.
+- **Decode / TTFT:** see [Benchmark](#benchmark) (~95 tok/s and ~103 ms TTFT at concurrency 1; ~317 tok/s aggregate at ×8). Numbers are workload-dependent.
 
 ---
 
