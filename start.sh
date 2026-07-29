@@ -2,7 +2,7 @@
 set -euo pipefail
 
 MODEL_ID="unsloth/Qwen3.6-35B-A3B-NVFP4"
-IMAGE="ghcr.io/miaai-lab/unsloth-qwen3.6-35b-nvfp4-fast-dgx-spark:latest"
+IMAGE="ghcr.io/miaai-lab/mia-vllm-gb10-linear-b12x:latest"
 CONTAINER_NAME="Qwen35-35b-a3b-nvfp4"
 HOST="0.0.0.0"
 PORT="8888"
@@ -97,6 +97,22 @@ ensure_model_available() {
   fi
 }
 
+ensure_image() {
+  if docker image inspect "${IMAGE}" >/dev/null 2>&1; then
+    echo "Using local image: ${IMAGE}"
+    return
+  fi
+  echo "Pulling image: ${IMAGE}"
+  docker pull "${IMAGE}" 2>&1 || {
+    echo "Failed to pull image (and no local image named ${IMAGE})"
+    echo "Build the custom image with: ./docker/build.sh"
+    exit 1
+  }
+}
+
+# Image first: model download may use docker run with ${IMAGE} as a fallback.
+ensure_image
+
 ensure_model_available
 
 if docker ps -a --format '{{.Names}}' | grep -qx "${CONTAINER_NAME}"; then
@@ -111,8 +127,6 @@ fi
 echo "Starting vLLM container for ${MODEL_ID}"
 echo "Image: ${IMAGE}"
 echo "Listening on ${HOST}:${PORT}"
-echo "Pulling image: ${IMAGE}"
-docker pull "${IMAGE}" 2>&1 || { echo "Failed to pull image"; exit 1; }
 echo
 
 cat >"${LOG_FILE}" <<EOF
